@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mi Perfil — Pixolot</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .profile-container {
+      max-width: 1000px;
+      margin: 40px auto;
+    }
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 32px;
+      margin-top: 32px;
+    }
+    .profile-sidebar {
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+    }
+    .profile-card {
+      background: var(--card);
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+      text-align: center;
+    }
+    .profile-avatar-wrapper {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 20px;
+    }
+    .profile-avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      font-weight: 700;
+      color: #07102a;
+      overflow: hidden;
+      border: 4px solid rgba(123,97,255,0.2);
+      box-shadow: 0 8px 24px rgba(123,97,255,0.3);
+    }
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .avatar-upload-btn {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      border: 3px solid var(--card);
+      color: #07102a;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(123,97,255,0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar-upload-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 18px rgba(123,97,255,0.7);
+    }
+    .avatar-upload-btn::before {
+      content: "📷";
+    }
+    .profile-name {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 8px;
+    }
+    .profile-email {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 20px;
+    }
+    .profile-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent-1);
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .settings-section {
+      background: var(--card);
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+      margin-bottom: 24px;
+    }
+    .settings-section h3 {
+      margin: 0 0 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(255,255,255,0.06);
+      color: var(--accent-1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+    }
+    .form-group {
+      margin-bottom: 24px;
+    }
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+    .form-group label {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--glass);
+      color: #fff;
+      font-size: 15px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent-1);
+      background: rgba(255,255,255,0.06);
+    }
+    .form-group input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .char-counter {
+      text-align: right;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .profile-tabs {
+      display: flex;
+      gap: 12px;
+      border-bottom: 2px solid rgba(255,255,255,0.06);
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: #fff;
+    }
+    .tab-btn.active {
+      color: var(--accent-1);
+      border-bottom-color: var(--accent-1);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .danger-zone {
+      border: 2px solid rgba(255,71,87,0.3);
+      border-radius: 12px;
+      padding: 20px;
+      background: rgba(255,71,87,0.05);
+    }
+    .danger-zone h4 {
+      color: #ff4757;
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+    .alert {
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .alert.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    .alert-success {
+      background: rgba(76,175,80,0.15);
+      border-left: 4px solid #4CAF50;
+      color: #4CAF50;
+    }
+    .alert-error {
+      background: rgba(255,71,87,0.15);
+      border-left: 4px solid #ff4757;
+      color: #ff4757;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(123,97,255,0.15);
+      color: var(--accent-1);
+      margin: 4px;
+    }
+    .avatar-preview {
+      margin-top: 16px;
+      text-align: center;
+    }
+    .avatar-preview img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent-1);
+      box-shadow: 0 6px 20px rgba(123,97,255,0.4);
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: var(--glass);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .checkbox-label:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(4px);
+    }
+    .checkbox-label input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    @media (max-width: 900px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+      .profile-sidebar {
+        position: static;
+      }
+      .action-buttons {
+        flex-direction: column;
+      }
+      .action-buttons .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="container header" style="background:rgba(52,73,94,0.85);backdrop-filter:blur(10px);position:sticky;top:0;z-index:999;box-shadow:0 2px 20px rgba(0,0,0,0.3)">
+    <div class="brand">
+      <img id="brandImg" src="PIXOLOTEL.png" alt="Logo Pixolot" class="brand-logo" data-initials="PX" onerror="this.style.display='none'">
+      <span id="brandFallback" class="logo" aria-hidden="true" style="display:none">PX</span>
+      <div>
+        <div class="site-title">Pyxolotl</div>
+        <div style="font-size:12px;color:var(--muted)">Tu perfil</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="pixolot.html">Inicio</a>
+      <a href="pixolot.html#gallery">Juegos</a>
+      <a href="perfil.html" style="color:#fff">Perfil</a>
+      <button id="logoutBtn" class="btn btn-ghost" style="color:#ff4757">Cerrar sesión</button>
+    </nav>
+    <button id="menuBtn" class="btn btn-ghost" aria-label="menu">☰</button>
+  </header>
+
+  <div class="profile-container container">
+    <div id="successAlert" class="alert alert-success">
+      <span id="successMessage">Cambios guardados correctamente</span>
+    </div>
+    <div id="errorAlert" class="alert alert-error">
+      <span id="errorMessage">Ocurrió un error</span>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <h1 style="margin:0 0 8px">Mi Perfil</h1>
+      <p style="color:var(--muted);margin:0">Gestiona tu información personal y preferencias</p>
+    </div>
+
+    <div class="profile-grid">
+      <div class="profile-sidebar">
+        <div class="profile-card">
+          <div class="profile-avatar-wrapper">
+            <div class="profile-avatar" id="sidebarAvatar">
+              <img id="sidebarAvatarImg" style="display:none" alt="Avatar">
+              <span id="sidebarAvatarInitial">U</span>
+            </div>
+            <button class="avatar-upload-btn" onclick="document.getElementById('avatarInput').click()" title="Cambiar foto"></button>
+            <input type="file" id="avatarInput" accept="image/*" style="display:none">
+          </div>
+
+          <h2 class="profile-name" id="profileName">Usuario</h2>
+          <p class="profile-email" id="profileEmail">usuario@email.com</p>
+
+          <div style="margin:16px 0">
+            <span class="badge">Miembro 2025</span>
+          </div>
+
+          <div class="profile-stats">
+            <div class="stat-item">
+              <div class="stat-value">4</div>
+              <div class="stat-label">Juegos</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">12</div>
+              <div class="stat-label">Reseñas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="profile-tabs">
+          <button class="tab-btn active" data-tab="general">General</button>
+          <button class="tab-btn" data-tab="security">Seguridad</button>
+          <button class="tab-btn" data-tab="preferences">Preferencias</button>
+        </div>
+
+        <div class="tab-content active" id="general">
+          <form id="generalForm">
+            <div class="settings-section">
+              <h3>Información Personal</h3>
+              
+              <div class="form-group">
+                <label for="username">Nombre de usuario</label>
+                <input type="text" id="username" placeholder="Tu nombre de usuario" required>
+              </div>
+
+              <div class="form-group">
+                <label for="bio">Biografía</label>
+                <textarea id="bio" placeholder="Cuéntanos sobre ti, tus juegos favoritos, tus proyectos..." maxlength="500"></textarea>
+                <div class="char-counter">
+                  <span id="bioCounter">0</span>/500 caracteres
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="location">Ubicación</label>
+                <input type="text" id="location" placeholder="Ciudad, País">
+              </div>
+
+              <div class="form-group">
+                <label for="website">Sitio web / Portfolio</label>
+                <input type="url" id="website" placeholder="https://tu-sitio.com">
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>Foto de Perfil</h3>
+              
+              <div class="form-group">
+                <label>Cambiar imagen de perfil</label>
+                <button type="button" class="btn" onclick="document.getElementById('avatarInputMain').click()" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;font-weight:600;padding:12px 24px">
+                  Seleccionar desde tu computadora
+                </button>
+                <input type="file" id="avatarInputMain" accept="image/*" style="display:none">
+                <div style="font-size:12px;color:var(--muted);margin-top:8px">
+                  Formatos aceptados: JPG, PNG, GIF · Tamaño máximo: 5MB
+                </div>
+                <div id="avatarPreview" class="avatar-preview" style="display:none">
+                  <img id="previewImg" alt="Vista previa">
+                  <div style="margin-top:12px;font-size:13px;color:var(--muted)">Vista previa de tu nueva foto</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-buttons">
+              <button type="submit" class="btn" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;font-weight:700;padding:14px 28px">
+                Guardar cambios
+              </button>
+              <button type="button" class="btn btn-ghost" onclick="resetForm('generalForm')">
+                Deshacer cambios
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="tab-content" id="security">
+          <form id="emailForm">
+            <div class="settings-section">
+              <h3>Correo Electrónico</h3>
+              
+              <div class="form-group">
+                <label for="currentEmail">Correo actual</label>
+                <input type="email" id="currentEmail" disabled>
+              </div>
+
+              <div class="form-group">
+                <label for="newEmail">Nuevo correo electrónico</label>
+                <input type="email" id="newEmail" placeholder="nuevo@email.com">
+              </div>
+
+              <div class="form-group">
+                <label for="confirmEmail">Confirmar nuevo correo</label>
+                <input type="email" id="confirmEmail" placeholder="nuevo@email.com">
+              </div>
+
+              <div class="action-buttons">
+                <button type="submit" class="btn" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;font-weight:700;padding:14px 28px">
+                  Actualizar correo
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <form id="passwordForm">
+            <div class="settings-section">
+              <h3>Cambiar Contraseña</h3>
+              
+              <div class="form-group">
+                <label for="currentPassword">Contraseña actual</label>
+                <input type="password" id="currentPassword" placeholder="••••••••">
+              </div>
+
+              <div class="form-group">
+                <label for="newPassword">Nueva contraseña</label>
+                <input type="password" id="newPassword" placeholder="••••••••" minlength="8">
+                <div style="font-size:12px;color:var(--muted);margin-top:4px">
+                  Mínimo 8 caracteres para mayor seguridad
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmPassword">Confirmar nueva contraseña</label>
+                <input type="password" id="confirmPassword" placeholder="••••••••">
+              </div>
+
+              <div class="action-buttons">
+                <button type="submit" class="btn" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;font-weight:700;padding:14px 28px">
+                  Cambiar contraseña
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div class="settings-section danger-zone">
+            <h4>Zona de Peligro</h4>
+            <p style="color:var(--muted);margin:0 0 16px;font-size:14px">
+              Una vez que elimines tu cuenta, no hay vuelta atrás. Perderás todos tus datos, juegos y progreso.
+            </p>
+            <button type="button" class="btn" onclick="deleteAccount()" style="background:#ff4757;color:#fff;font-weight:600;padding:12px 24px">
+              Eliminar cuenta permanentemente
+            </button>
+          </div>
+        </div>
+
+        <div class="tab-content" id="preferences">
+          <div class="settings-section">
+            <h3>Preferencias de la Aplicación</h3>
+            
+            <label class="checkbox-label">
+              <input type="checkbox" id="showProfile">
+              <span>Hacer mi perfil público (visible para todos)</span>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="showActivity" checked>
+              <span>Mostrar mi actividad reciente</span>
+            </label>
+
+            <div class="action-buttons">
+              <button type="button" class="btn" onclick="savePreferences()" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;font-weight:700;padding:14px 28px">
+                Guardar preferencias
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" style="margin-top:60px">
+    <div class="container center" style="flex-direction:column;gap:10px">
+      <div style="width:100%;display:flex;justify-content:space-between;align-items:center;max-width:var(--max-width)">
+        <div>© 2025 Pixolot · Hecho con amor para desarrolladores indie</div>
+        <div style="color:var(--muted)">Contacto: pixolot@example.com</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    function loadUserData() {
+      const user = JSON.parse(localStorage.getItem('pixolot_current_user') || '{}');
+      const userData = JSON.parse(localStorage.getItem('pixolot_user') || '{}');
+      
+      const fullName = user.name || (userData.firstName || '') + ' ' + (userData.lastName || '') || 'Usuario';
+      const email = user.email || userData.email || 'usuario@email.com';
+      const username = userData.username || fullName || email.split('@')[0];
+      const bio = userData.bio || '';
+      const location = userData.location || '';
+      const website = userData.website || '';
+      const avatar = userData.avatar || '';
+      
+      document.getElementById('profileName').textContent = fullName;
+      document.getElementById('profileEmail').textContent = email;
+      document.getElementById('username').value = username;
+      document.getElementById('bio').value = bio;
+      document.getElementById('location').value = location;
+      document.getElementById('website').value = website;
+      document.getElementById('currentEmail').value = email;
+      
+      updateBioCounter();
+      updateAvatar(avatar, fullName);
+      
+      document.getElementById('showProfile').checked = userData.showProfile || false;
+      document.getElementById('showActivity').checked = userData.showActivity !== false;
+    }
+
+    function updateAvatar(avatarUrl, name) {
+      const initial = name.charAt(0).toUpperCase();
+      const sidebarImg = document.getElementById('sidebarAvatarImg');
+      const sidebarInitial = document.getElementById('sidebarAvatarInitial');
+      
+      if (avatarUrl) {
+        sidebarImg.src = avatarUrl;
+        sidebarImg.style.display = 'block';
+        sidebarInitial.style.display = 'none';
+      } else {
+        sidebarImg.style.display = 'none';
+        sidebarInitial.style.display = 'block';
+        sidebarInitial.textContent = initial;
+      }
+    }
+
+    function handleAvatarUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      
+      if (!file.type.startsWith('image/')) {
+        showError('Por favor selecciona una imagen válida (JPG, PNG o GIF)');
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        showError('La imagen no debe superar 5MB');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const avatarUrl = e.target.result;
+        
+        const preview = document.getElementById('avatarPreview');
+        const previewImg = document.getElementById('previewImg');
+        previewImg.src = avatarUrl;
+        preview.style.display = 'block';
+        
+        const name = document.getElementById('username').value || 'Usuario';
+        updateAvatar(avatarUrl, name);
+        
+        const userData = JSON.parse(localStorage.getItem('pixolot_user') || '{}');
+        userData.avatar = avatarUrl;
+        localStorage.setItem('pixolot_user', JSON.stringify(userData));
+        
+        showSuccess('Foto de perfil actualizada correctamente');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById('avatarInput').addEventListener('change', function() {
+      handleAvatarUpload(this);
+    });
+    
+    document.getElementById('avatarInputMain').addEventListener('change', function() {
+      handleAvatarUpload(this);
+    });
+
+    document.getElementById('bio').addEventListener('input', updateBioCounter);
+    
+    function updateBioCounter() {
+      const bio = document.getElementById('bio').value;
+      document.getElementById('bioCounter').textContent = bio.length;
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(function(b) {
+          b.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-content').forEach(function(c) {
+          c.classList.remove('active');
+        });
+        
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    document.getElementById('generalForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const userData = JSON.parse(localStorage.getItem('pixolot_user') || '{}');
+      const currentUser = JSON.parse(localStorage.getItem('pixolot_current_user') || '{}');
+      
+      const username = document.getElementById('username').value;
+      userData.username = username;
+      userData.bio = document.getElementById('bio').value;
+      userData.location = document.getElementById('location').value;
+      userData.website = document.getElementById('website').value;
+      
+      localStorage.setItem('pixolot_user', JSON.stringify(userData));
+      
+      currentUser.name = username;
+      localStorage.setItem('pixolot_current_user', JSON.stringify(currentUser));
+      
+      document.getElementById('profileName').textContent = username;
+      
+      showSuccess('Información actualizada correctamente');
+    });
+
+    document.getElementById('emailForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const newEmail = document.getElementById('newEmail').value.trim();
+      const confirmEmail = document.getElementById('confirmEmail').value.trim();
+      
+      if (!newEmail || !confirmEmail) {
+        showError('Por favor completa todos los campos');
+        return;
+      }
+      
+      if (newEmail !== confirmEmail) {
+        showError('Los correos electrónicos no coinciden');
+        return;
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(newEmail)) {
+        showError('Por favor ingresa un correo válido');
+        return;
+      }
+      
+      const currentUser = JSON.parse(localStorage.getItem('pixolot_current_user') || '{}');
+      currentUser.email = newEmail;
+      localStorage.setItem('pixolot_current_user', JSON.stringify(currentUser));
+      
+      const userData = JSON.parse(localStorage.getItem('pixolot_user') || '{}');
+      userData.email = newEmail;
+      localStorage.setItem('pixolot_user', JSON.stringify(userData));
+      
+      const users = JSON.parse(localStorage.getItem('pixolot_users') || '[]');
+      const userIndex = users.findIndex(function(u) { return u.id === currentUser.id; });
+      if (userIndex !== -1) {
+        users[userIndex].email = newEmail;
+        localStorage.setItem('pixolot_users', JSON.stringify(users));
+      }
+      
+      document.getElementById('currentEmail').value = newEmail;
+      document.getElementById('profileEmail').textContent = newEmail;
+      document.getElementById('newEmail').value = '';
+      document.getElementById('confirmEmail').value = '';
+      
+      showSuccess('Correo electrónico actualizado correctamente');
+    });
+
+    document.getElementById('passwordForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        showError('Por favor completa todos los campos');
+        return;
+      }
+      
+      if (newPassword !== confirmPassword) {
+        showError('Las contraseñas nuevas no coinciden');
+        return;
+      }
+      
+      if (newPassword.length < 8) {
+        showError('La contraseña debe tener al menos 8 caracteres');
+        return;
+      }
+      
+      const currentUser = JSON.parse(localStorage.getItem('pixolot_current_user') || '{}');
+      if (currentUser.password !== currentPassword) {
+        showError('La contraseña actual es incorrecta');
+        return;
+      }
+      
+      currentUser.password = newPassword;
+      localStorage.setItem('pixolot_current_user', JSON.stringify(currentUser));
+      
+      const users = JSON.parse(localStorage.getItem('pixolot_users') || '[]');
+      const userIndex = users.findIndex(function(u) { return u.id === currentUser.id; });
+      if (userIndex !== -1) {
+        users[userIndex].password = newPassword;
+        localStorage.setItem('pixolot_users', JSON.stringify(users));
+      }
+      
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+      
+      showSuccess('Contraseña actualizada correctamente');
+    });
+
+    function savePreferences() {
+      const userData = JSON.parse(localStorage.getItem('pixolot_user') || '{}');
+      
+      userData.showProfile = document.getElementById('showProfile').checked;
+      userData.showActivity = document.getElementById('showActivity').checked;
+      
+      localStorage.setItem('pixolot_user', JSON.stringify(userData));
+      showSuccess('Preferencias guardadas correctamente');
+    }
+
+    function deleteAccount() {
+      if (confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.')) {
+        if (confirm('ÚLTIMA ADVERTENCIA: Perderás todos tus datos, juegos, reseñas y progreso permanentemente. ¿Continuar?')) {
+          localStorage.removeItem('pixolot_current_user');
+          localStorage.removeItem('pixolot_user');
+          localStorage.removeItem('pixolotCart');
+          
+          alert('Tu cuenta ha sido eliminada exitosamente');
+          window.location.href = 'pixolot.html';
+        }
+      }
+    }
+
+    function resetForm(formId) {
+      if (confirm('¿Deseas descartar todos los cambios?')) {
+        loadUserData();
+        showSuccess('Cambios descartados');
+      }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      if (confirm('¿Deseas cerrar sesión?')) {
+        localStorage.removeItem('pixolot_current_user');
+        window.location.href = 'inicio.html';
+      }
+    });
+
+    function showSuccess(message) {
+      const alert = document.getElementById('successAlert');
+      const messageEl = document.getElementById('successMessage');
+      messageEl.textContent = message;
+      alert.classList.add('show');
+      
+      setTimeout(function() {
+        alert.classList.remove('show');
+      }, 4000);
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showError(message) {
+      const alert = document.getElementById('errorAlert');
+      const messageEl = document.getElementById('errorMessage');
+      messageEl.textContent = message;
+      alert.classList.add('show');
+      
+      setTimeout(function() {
+        alert.classList.remove('show');
+      }, 4000);
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUserData();
+    });
+  </script>
+</body>
+</html>

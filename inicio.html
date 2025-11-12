@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Acceso – Pixolot</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .form-container {
+      background: var(--card);
+      padding: 32px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+      animation: fadeIn .4s ease both;
+    }
+    form { display: flex; flex-direction: column; }
+    input, select {
+      width: 100%;
+      margin-top: 6px;
+      margin-bottom: 14px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: var(--glass);
+      color: #fff;
+      font-family: inherit;
+    }
+    select option {
+      background: var(--card);
+      color: #fff;
+    }
+    label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .hidden { display: none; }
+    .switch-link {
+      color: var(--accent-1);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .switch-link:hover {
+      text-decoration: underline;
+    }
+    .account-type-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .account-type-card {
+      padding: 16px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      background: var(--glass);
+    }
+    .account-type-card:hover {
+      border-color: var(--accent-1);
+      background: rgba(123,97,255,0.1);
+    }
+    .account-type-card.selected {
+      border-color: var(--accent-1);
+      background: rgba(123,97,255,0.15);
+    }
+    .account-type-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    .account-type-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .account-type-desc {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .forgot-password-link {
+      text-align: right;
+      margin-top: -10px;
+      margin-bottom: 14px;
+    }
+    .success-message {
+      background: rgba(76,175,80,0.15);
+      border-left: 4px solid #4CAF50;
+      color: #4CAF50;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    .error-message {
+      background: rgba(255,71,87,0.15);
+      border-left: 4px solid #ff4757;
+      color: #ff4757;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh">
+
+  <div class="form-container">
+    <div style="text-align:center;margin-bottom:20px">
+      <img src="PIXOLOTEL.png" alt="Logo Pixolot" class="brand-logo" style="margin-bottom:8px">
+      <h2 style="margin:0">Bienvenido a Pixolot</h2>
+      <p style="color:var(--muted);font-size:14px" id="formTitle">Inicia sesión en tu cuenta</p>
+    </div>
+
+    <div id="messageContainer"></div>
+
+    <!-- FORMULARIO DE INICIO DE SESIÓN -->
+    <form id="loginForm">
+      <label for="email">Correo electrónico</label>
+      <input id="email" type="email" required>
+
+      <label for="password">Contraseña</label>
+      <input id="password" type="password" required>
+
+      <div class="forgot-password-link">
+        <span class="switch-link" id="showForgotPassword">¿Olvidaste tu contraseña?</span>
+      </div>
+
+      <button type="submit" class="btn" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;font-weight:600">Iniciar sesión</button>
+
+      <p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">
+        ¿No tienes cuenta?
+        <span class="switch-link" id="showRegister">Crear una</span>
+      </p>
+    </form>
+
+    <!-- FORMULARIO DE REGISTRO -->
+    <form id="registerForm" class="hidden">
+      <label for="newName">Nombre completo</label>
+      <input id="newName" type="text" required>
+
+      <label for="newEmail">Correo electrónico</label>
+      <input id="newEmail" type="email" required>
+
+      <label for="newPassword">Contraseña</label>
+      <input id="newPassword" type="password" required minlength="6">
+      <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px">Mínimo 6 caracteres</p>
+
+      <label>Tipo de cuenta</label>
+      <div class="account-type-selector">
+        <div class="account-type-card" data-type="buyer" id="buyerCard">
+          <div class="account-type-icon">🛒</div>
+          <div class="account-type-title">Comprador</div>
+          <div class="account-type-desc">Compra y juega</div>
+        </div>
+        <div class="account-type-card" data-type="developer" id="developerCard">
+          <div class="account-type-icon">👨‍💻</div>
+          <div class="account-type-title">Desarrollador</div>
+          <div class="account-type-desc">Publica juegos</div>
+        </div>
+      </div>
+      <input type="hidden" id="accountType" value="buyer">
+
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px">
+        <input type="checkbox" id="termsCheckbox" required style="width:auto">
+        <span style="font-size:13px">Acepto los <a href="#" style="color:var(--accent-1)">términos y condiciones</a></span>
+      </label>
+
+      <button type="submit" class="btn" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;font-weight:600;margin-top:14px">Crear cuenta</button>
+
+      <p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">
+        ¿Ya tienes cuenta?
+        <span class="switch-link" id="showLogin">Iniciar sesión</span>
+      </p>
+    </form>
+
+    <!-- FORMULARIO DE RECUPERACIÓN DE CONTRASEÑA -->
+    <form id="forgotPasswordForm" class="hidden">
+      <p style="color:var(--muted);font-size:14px;margin-bottom:20px">
+        Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.
+      </p>
+
+      <label for="recoveryEmail">Correo electrónico</label>
+      <input id="recoveryEmail" type="email" required>
+
+      <button type="submit" class="btn" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;font-weight:600">Enviar instrucciones</button>
+
+      <p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">
+        <span class="switch-link" id="backToLogin">← Volver a inicio de sesión</span>
+      </p>
+    </form>
+
+    <div style="text-align:center;margin-top:20px">
+      <a href="pixolot.html" class="btn btn-ghost" style="width:100%">← Volver al inicio</a>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const formTitle = document.getElementById('formTitle');
+    const showRegister = document.getElementById('showRegister');
+    const showLogin = document.getElementById('showLogin');
+    const showForgotPassword = document.getElementById('showForgotPassword');
+    const backToLogin = document.getElementById('backToLogin');
+    const messageContainer = document.getElementById('messageContainer');
+    const buyerCard = document.getElementById('buyerCard');
+    const developerCard = document.getElementById('developerCard');
+    const accountTypeInput = document.getElementById('accountType');
+
+    // Funciones para mostrar mensajes
+    function showMessage(message, type = 'success') {
+      const className = type === 'success' ? 'success-message' : 'error-message';
+      messageContainer.innerHTML = `<div class="${className}">${message}</div>`;
+      setTimeout(() => {
+        messageContainer.innerHTML = '';
+      }, 5000);
+    }
+
+    // Selección de tipo de cuenta
+    buyerCard.addEventListener('click', () => {
+      buyerCard.classList.add('selected');
+      developerCard.classList.remove('selected');
+      accountTypeInput.value = 'buyer';
+    });
+
+    developerCard.addEventListener('click', () => {
+      developerCard.classList.add('selected');
+      buyerCard.classList.remove('selected');
+      accountTypeInput.value = 'developer';
+    });
+
+    // Por defecto seleccionar comprador
+    buyerCard.classList.add('selected');
+
+    // Navegación entre formularios
+    showRegister.addEventListener('click', () => {
+      loginForm.classList.add('hidden');
+      forgotPasswordForm.classList.add('hidden');
+      registerForm.classList.remove('hidden');
+      formTitle.textContent = 'Crea tu cuenta en Pixolot';
+      messageContainer.innerHTML = '';
+    });
+
+    showLogin.addEventListener('click', () => {
+      registerForm.classList.add('hidden');
+      forgotPasswordForm.classList.add('hidden');
+      loginForm.classList.remove('hidden');
+      formTitle.textContent = 'Inicia sesión en tu cuenta';
+      messageContainer.innerHTML = '';
+    });
+
+    showForgotPassword.addEventListener('click', () => {
+      loginForm.classList.add('hidden');
+      registerForm.classList.add('hidden');
+      forgotPasswordForm.classList.remove('hidden');
+      formTitle.textContent = 'Recuperar contraseña';
+      messageContainer.innerHTML = '';
+    });
+
+    backToLogin.addEventListener('click', () => {
+      forgotPasswordForm.classList.add('hidden');
+      registerForm.classList.add('hidden');
+      loginForm.classList.remove('hidden');
+      formTitle.textContent = 'Inicia sesión en tu cuenta';
+      messageContainer.innerHTML = '';
+    });
+
+    // Manejo del login
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const users = JSON.parse(localStorage.getItem('pixolot_users') || '[]');
+      const user = users.find(u => u.email === email && u.password === password);
+
+      if (user) {
+        localStorage.setItem('pixolot_current_user', JSON.stringify(user));
+        showMessage('¡Bienvenido de vuelta!', 'success');
+        setTimeout(() => {
+          window.location.href = 'pixolot.html';
+        }, 1000);
+      } else {
+        showMessage('Correo o contraseña incorrectos', 'error');
+      }
+    });
+
+    // Manejo del registro
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('newName').value;
+      const email = document.getElementById('newEmail').value;
+      const password = document.getElementById('newPassword').value;
+      const accountType = accountTypeInput.value;
+      const termsAccepted = document.getElementById('termsCheckbox').checked;
+
+      if (!termsAccepted) {
+        showMessage('Debes aceptar los términos y condiciones', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('pixolot_users') || '[]');
+      const exists = users.find(u => u.email === email);
+
+      if (exists) {
+        showMessage('Este correo ya está registrado', 'error');
+        return;
+      }
+
+      const newUser = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        password: password,
+        accountType: accountType,
+        createdAt: new Date().toISOString()
+      };
+
+      users.push(newUser);
+      localStorage.setItem('pixolot_users', JSON.stringify(users));
+      localStorage.setItem('pixolot_current_user', JSON.stringify(newUser));
+      
+      const [firstName, ...lastNameParts] = name.split(' ');
+      const lastName = lastNameParts.join(' ');
+      localStorage.setItem('pixolot_user', JSON.stringify({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        username: email.split('@')[0],
+        bio: '',
+        accountType: accountType
+      }));
+
+      showMessage('¡Cuenta creada exitosamente!', 'success');
+      setTimeout(() => {
+        window.location.href = 'pixolot.html';
+      }, 1500);
+    });
+
+    // Manejo de recuperación de contraseña
+    forgotPasswordForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('recoveryEmail').value;
+
+      const users = JSON.parse(localStorage.getItem('pixolot_users') || '[]');
+      const user = users.find(u => u.email === email);
+
+      if (user) {
+        // En un sistema real, aquí se enviaría un email
+        // Por ahora, guardamos un token temporal
+        const recoveryToken = Math.random().toString(36).substr(2, 9);
+        const recoveryData = {
+          email: email,
+          token: recoveryToken,
+          expiry: Date.now() + (30 * 60 * 1000) // 30 minutos
+        };
+        localStorage.setItem('pixolot_recovery', JSON.stringify(recoveryData));
+        
+        showMessage('✉️ Instrucciones enviadas a tu correo (Simulación: revisa la consola)', 'success');
+        console.log('🔑 TOKEN DE RECUPERACIÓN:', recoveryToken);
+        console.log('📧 Email:', email);
+        console.log('💡 En un sistema real, este token se enviaría por correo electrónico');
+        
+        setTimeout(() => {
+          forgotPasswordForm.classList.add('hidden');
+          loginForm.classList.remove('hidden');
+          formTitle.textContent = 'Inicia sesión en tu cuenta';
+        }, 3000);
+      } else {
+        showMessage('No existe una cuenta con ese correo electrónico', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

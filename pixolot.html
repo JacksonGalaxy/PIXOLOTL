@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pixolot – Indie Games Showcase</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .search-filter-section {
+      background: var(--card);
+      padding: 24px;
+      border-radius: 16px;
+      margin: 32px 0;
+      box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+    }
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--glass);
+      color: #fff;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-1);
+    }
+    .search-input::placeholder {
+      color: var(--muted);
+    }
+    .search-btn {
+      padding: 12px 24px;
+      background: linear-gradient(90deg,var(--accent-2),var(--accent-1));
+      border: none;
+      border-radius: 10px;
+      color: #07102a;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .search-btn:hover {
+      transform: translateY(-2px);
+    }
+    .filters-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .filter-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .filter-select {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--glass);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .filter-select option {
+      background: var(--card);
+    }
+    .price-range-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .price-input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--glass);
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+    }
+    .filter-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .clear-filters-btn {
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .clear-filters-btn:hover {
+      border-color: var(--accent-1);
+      color: var(--accent-1);
+    }
+    .results-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .results-count {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .sort-select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--glass);
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--glass);
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+    .no-results-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .filter-tag {
+      padding: 6px 12px;
+      background: rgba(123,97,255,0.15);
+      border: 1px solid var(--accent-1);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--accent-1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .filter-tag-remove {
+      cursor: pointer;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <header class="container header">
+    <div class="brand">
+      <img id="brandImg" src="PIXOLOTEL.png" alt="Logo Pixolot" class="brand-logo" data-initials="PX" onerror="this.style.display='none'">
+      <span id="brandFallback" class="logo" aria-hidden="true" style="display:none">PX</span>
+
+      <div>
+        <div class="site-title">Pyxolotl</div>
+        <div style="font-size:12px;color:var(--muted)">Indie developers showcase</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="#features">Características</a>
+      <a href="#gallery">Juegos</a>
+      <a href="#about">Acerca</a>
+      <a href="perfil.html" style="text-decoration:none;color:var(--muted);transition:color 0.2s;display:flex;align-items:center;gap:6px">
+        👤 Mi Perfil
+      </a>
+      <a class="cta" href="publicar-juego.html">Presentar juego</a>
+      <a class="btn btn-ghost" href="inicio.html">Iniciar sesión</a>
+      <button id="cartBtn" class="btn btn-ghost" style="position:relative">
+        🛒 <span id="cartCount" class="cart-badge">0</span>
+      </button>
+    </nav>
+
+    <button id="menuBtn" class="btn btn-ghost" aria-label="menu">☰</button>
+  </header>
+
+  <main class="container">
+    <section class="hero fade-in">
+      <div class="hero-left">
+        <span class="kicker">Beta · Pixolot</span>
+        <h1>Más visibilidad para desarrolladores indie</h1>
+        <p>Pixolot es una vitrina pensada para creadores de videojuegos independientes. Subí tu proyecto, consigue feedback y llega a jugadores.</p>
+
+        <div class="hero-cta">
+          <a class="btn" href="#gallery" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a">Explorar juegos</a>
+          <a class="btn btn-ghost" href="publicar-juego.html">Presentar tu juego</a>
+        </div>
+      </div>
+
+      <div style="flex:1">
+        <div style="background:linear-gradient(135deg,var(--accent-1),var(--accent-2));padding:18px;border-radius:16px">
+          <div style="color:#07102a;font-weight:700">Destacado</div>
+          <div style="height:220px;margin-top:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.07), rgba(255,255,255,0.02));display:flex;align-items:center;justify-content:center">Imagen del juego o demo</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="features">
+      <div class="feature">
+        <h4>Visibilidad</h4>
+        <p>Conecta con jugadores y otros desarrolladores. Promociona tus builds y demos.</p>
+      </div>
+      <div class="feature">
+        <h4>Feedback</h4>
+        <p>Recibe comentarios constructivos y métricas para mejorar tu juego.</p>
+      </div>
+      <div class="feature">
+        <h4>Colaboraciones</h4>
+        <p>Encuentra artistas, músicos y programadores interesados en colaborar.</p>
+      </div>
+    </section>
+
+    <section id="gallery">
+      <h2 style="margin-top:0">Juegos recientes</h2>
+      
+      <!-- BÚSQUEDA Y FILTROS -->
+      <div class="search-filter-section">
+        <div class="search-bar">
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar juegos por título, género o descripción...">
+          <button class="search-btn" id="searchBtn">Buscar</button>
+        </div>
+
+        <div class="filters-container">
+          <div class="filter-group">
+            <label class="filter-label">Género</label>
+            <select id="genreFilter" class="filter-select">
+              <option value="">Todos los géneros</option>
+              <option value="arcade">Arcade</option>
+              <option value="aventura">Aventura</option>
+              <option value="plataformas">Plataformas</option>
+              <option value="simulacion">Simulación</option>
+              <option value="puzzle">Puzzle</option>
+              <option value="rpg">RPG</option>
+              <option value="estrategia">Estrategia</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Precio</label>
+            <select id="priceFilter" class="filter-select">
+              <option value="">Todos los precios</option>
+              <option value="free">Gratis</option>
+              <option value="0-10">$0 - $10</option>
+              <option value="10-20">$10 - $20</option>
+              <option value="20+">Más de $20</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Calificación</label>
+            <select id="ratingFilter" class="filter-select">
+              <option value="">Todas las calificaciones</option>
+              <option value="4">⭐ 4+ estrellas</option>
+              <option value="3">⭐ 3+ estrellas</option>
+              <option value="2">⭐ 2+ estrellas</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Ordenar por</label>
+            <select id="sortFilter" class="filter-select">
+              <option value="recent">Más recientes</option>
+              <option value="price-low">Precio: menor a mayor</option>
+              <option value="price-high">Precio: mayor a menor</option>
+              <option value="rating">Mejor valorados</option>
+              <option value="name">Nombre A-Z</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button class="clear-filters-btn" id="clearFiltersBtn">🗑️ Limpiar filtros</button>
+        </div>
+
+        <div id="activeFilters" class="active-filters"></div>
+      </div>
+
+      <div class="results-info">
+        <div class="results-count" id="resultsCount">Mostrando 5 juegos</div>
+      </div>
+
+      <!-- JUEGOS GRATIS -->
+      <div id="freeGamesSection">
+        <h3 style="color:var(--accent-1);display:flex;align-items:center;gap:8px">
+          🎮 Juegos Gratis - ¡Juega ahora!
+        </h3>
+        <div class="grid" id="freeGamesGrid">
+          <article class="card free-game" data-game-type="free" data-genre="arcade" data-price="0" data-rating="5" data-name="Snake Game" data-date="2025-01-15" style="cursor:pointer">
+            <div class="thumb" style="background:linear-gradient(135deg,#4CAF50,#45a049);font-size:48px">🐍</div>
+            <h3>Snake Game</h3>
+            <p>Arcade · Clásico · 3 Niveles</p>
+            <div style="margin-top:8px;padding:8px;background:rgba(76,175,80,0.1);border-radius:6px">
+              <small style="color:#4CAF50;font-weight:600">✨ GRATIS - Juega ahora</small>
+            </div>
+            <div style="margin-top:8px;color:#ffd700">⭐⭐⭐⭐⭐ (5.0)</div>
+            <div style="margin-top:12px">
+              <button class="btn play-snake-btn" style="width:100%;background:linear-gradient(90deg,#4CAF50,#45a049);color:#fff;font-weight:600">
+                ▶️ Jugar ahora
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- JUEGOS PREMIUM -->
+      <div id="premiumGamesSection" style="margin-top:30px">
+        <h3 style="color:var(--accent-2);display:flex;align-items:center;gap:8px">
+          💎 Juegos Premium
+        </h3>
+        <div class="grid" id="premiumGamesGrid">
+          <article class="card" data-game-type="paid" data-genre="arcade" data-price="15.99" data-rating="4.8" data-name="Nebula Runner" data-date="2025-01-10" data-id="1">
+            <div class="thumb">NR</div>
+            <h3>Nebula Runner</h3>
+            <p>Endless runner · 2025 · Pixel art</p>
+            <div style="margin-top:8px;color:#ffd700">⭐⭐⭐⭐⭐ (4.8)</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+              <span style="font-size:18px;font-weight:700;color:var(--accent-1)">$15.99</span>
+              <button class="btn add-to-cart" data-id="1" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;padding:8px 16px">Agregar</button>
+            </div>
+          </article>
+
+          <article class="card" data-game-type="paid" data-genre="aventura" data-price="19.99" data-rating="4.6" data-name="Echoes" data-date="2024-12-20" data-id="2">
+            <div class="thumb">E</div>
+            <h3>Echoes</h3>
+            <p>Aventura · 2024 · Puzzle/Audio</p>
+            <div style="margin-top:8px;color:#ffd700">⭐⭐⭐⭐☆ (4.6)</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+              <span style="font-size:18px;font-weight:700;color:var(--accent-1)">$19.99</span>
+              <button class="btn add-to-cart" data-id="2" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;padding:8px 16px">Agregar</button>
+            </div>
+          </article>
+
+          <article class="card" data-game-type="paid" data-genre="plataformas" data-price="12.99" data-rating="4.7" data-name="Moss & Code" data-date="2025-01-05" data-id="3">
+            <div class="thumb">M</div>
+            <h3>Moss & Code</h3>
+            <p>Plataformas · 2025 · Indie</p>
+            <div style="margin-top:8px;color:#ffd700">⭐⭐⭐⭐⭐ (4.7)</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+              <span style="font-size:18px;font-weight:700;color:var(--accent-1)">$12.99</span>
+              <button class="btn add-to-cart" data-id="3" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;padding:8px 16px">Agregar</button>
+            </div>
+          </article>
+
+          <article class="card" data-game-type="paid" data-genre="simulacion" data-price="9.99" data-rating="4.5" data-name="Starbound Chef" data-date="2023-11-15" data-id="4">
+            <div class="thumb">SC</div>
+            <h3>Starbound Chef</h3>
+            <p>Sim · 2023 · Multijugador</p>
+            <div style="margin-top:8px;color:#ffd700">⭐⭐⭐⭐☆ (4.5)</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+              <span style="font-size:18px;font-weight:700;color:var(--accent-1)">$9.99</span>
+              <button class="btn add-to-cart" data-id="4" style="background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;padding:8px 16px">Agregar</button>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- NO RESULTS MESSAGE -->
+      <div id="noResults" class="no-results" style="display:none">
+        <div class="no-results-icon">🔍</div>
+        <h3>No se encontraron juegos</h3>
+        <p style="color:var(--muted)">Intenta ajustar los filtros o la búsqueda</p>
+      </div>
+    </section>
+
+    <section id="about" style="margin-top:28px">
+      <h2>Acerca de Pixolot</h2>
+      <p style="color:var(--muted)">Pixolot es una iniciativa estudiantil para ayudar a desarrolladores indie a obtener exposición. Este prototipo es sólo la parte frontal – la idea es integrar un panel para subir builds, moderación y herramientas de analítica.</p>
+    </section>
+
+    <footer class="footer">
+      <div class="container center" style="flex-direction:column;gap:10px">
+        <div style="width:100%;display:flex;justify-content:space-between;align-items:center;max-width:var(--max-width)">
+          <div>© 2025 Pixolot · Hecho con ♥ para desarrolladores indie</div>
+          <div style="color:var(--muted)">Contacto: pixolot@example.com</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- MODAL SNAKE GAME -->
+  <div id="snakeModal" class="modal" style="display:none">
+    <div class="panel" style="max-width:700px;background:#1a1a2e;padding:20px;position:relative">
+      <button class="close-snake" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:18px;width:32px;height:32px;border-radius:50%;cursor:pointer;z-index:100">✕</button>
+      
+      <div style="text-align:center;margin-bottom:15px">
+        <h2 style="margin:0;color:#4CAF50">🐍 Snake Game</h2>
+        <p style="color:var(--muted);margin:8px 0 0;font-size:14px">3 Niveles de Dificultad</p>
+      </div>
+
+      <div style="display:flex;justify-content:center;gap:15px;padding:12px;background:rgba(0,0,0,0.3);border-radius:8px;margin-bottom:15px">
+        <div style="text-align:center">
+          <div style="font-size:11px;color:var(--muted)">Nivel</div>
+          <div style="font-size:18px;font-weight:700;color:#4CAF50" id="level">1</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;color:var(--muted)">🍎 Manzanas</div>
+          <div style="font-size:18px;font-weight:700;color:#4CAF50" id="apples">0/10</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;color:var(--muted)">🏆 Puntaje</div>
+          <div style="font-size:18px;font-weight:700;color:#4CAF50" id="score">0</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;color:var(--muted)">⭐ Récord</div>
+          <div style="font-size:18px;font-weight:700;color:#4CAF50" id="highscore">0</div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:center;margin-bottom:15px">
+        <canvas width="400" height="400" id="game" style="border:3px solid #4CAF50;border-radius:10px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%)"></canvas>
+      </div>
+
+      <div id="levelInfo" style="padding:10px;background:rgba(76,175,80,0.15);border-radius:8px;border-left:3px solid #4CAF50;margin-bottom:10px;font-size:13px">
+        <strong>Nivel 1 - Modo Clásico:</strong> Come 10 manzanas para avanzar (Velocidad: Lenta)
+      </div>
+
+      <div style="text-align:center;color:var(--muted);font-size:12px">
+        Usa las flechas ⬆️⬇️⬅️➡️ o WASD para moverte
+      </div>
+
+      <div class="start-screen active" id="startScreen" style="position:absolute;inset:0;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;z-index:10">
+        <h2 style="font-size:2em;margin-bottom:15px;color:#4CAF50">🐍 Snake Game</h2>
+        <p style="margin:5px 0">🎮 <strong>Objetivo:</strong> Come manzanas y crece sin chocarte</p>
+        <p style="margin:5px 0">📊 <strong>3 Niveles de dificultad:</strong></p>
+        <p style="margin:3px 0">• Nivel 1: Velocidad Lenta (10 manzanas)</p>
+        <p style="margin:3px 0">• Nivel 2: Velocidad Media + Obstáculos (15 manzanas)</p>
+        <p style="margin:3px 0">• Nivel 3: Velocidad Rápida + Portales (20 manzanas)</p>
+        <p class="pulse" style="margin-top:20px;font-size:1.2em;color:#4CAF50">
+          ⌨️ Presiona cualquier tecla para comenzar
+        </p>
+      </div>
+
+      <div class="game-over" id="gameOver" style="position:absolute;inset:0;background:rgba(0,0,0,0.95);display:none;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;z-index:10">
+        <h2 style="font-size:2.5em;margin-bottom:15px">💀 Game Over</h2>
+        <p style="font-size:1.3em;margin-bottom:8px">Puntaje Final: <span id="finalScore">0</span></p>
+        <p style="font-size:1.1em;margin-bottom:15px">Nivel Alcanzado: <span id="finalLevel">1</span></p>
+        <p class="pulse" style="margin-top:20px;font-size:1.2em;color:#4CAF50">
+          ⌨️ Presiona cualquier tecla de dirección para jugar de nuevo
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CARRITO -->
+  <div id="cartModal" class="modal">
+    <div class="panel" style="max-width:600px">
+      <button class="close-cart" style="float:right;background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer">✕</button>
+      <h3>🛒 Tu Carrito</h3>
+      
+      <div id="cartItems" style="margin-top:20px;max-height:300px;overflow-y:auto"></div>
+
+      <div id="cartEmpty" style="text-align:center;padding:40px;color:var(--muted);display:none">
+        El carrito está vacío
+      </div>
+
+      <div id="cartSummary" style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+          <span>Subtotal:</span>
+          <span id="subtotal">$0.00</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+          <span>IVA (16%):</span>
+          <span id="tax">$0.00</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:20px;font-weight:700;color:var(--accent-1)">
+          <span>Total:</span>
+          <span id="total">$0.00</span>
+        </div>
+      </div>
+
+      <button id="checkoutBtn" class="btn" style="width:100%;margin-top:20px;background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#07102a;font-weight:700">
+        Proceder al pago
+      </button>
+    </div>
+  </div>
+
+  <script src="cart.js"></script>
+  <script src="main.js"></script>
+  <script>
+    // Sistema de búsqueda y filtros
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const genreFilter = document.getElementById('genreFilter');
+    const priceFilter = document.getElementById('priceFilter');
+    const ratingFilter = document.getElementById('ratingFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+    const resultsCount = document.getElementById('resultsCount');
+    const noResults = document.getElementById('noResults');
+    const activeFiltersContainer = document.getElementById('activeFilters');
+    const freeGamesSection = document.getElementById('freeGamesSection');
+    const premiumGamesSection = document.getElementById('premiumGamesSection');
+
+    let allGames = [];
+    let currentFilters = {
+      search: '',
+      genre: '',
+      price: '',
+      rating: '',
+      sort: 'recent'
+    };
+
+    // Recopilar todos los juegos al cargar
+    function collectGames() {
+      allGames = [];
+      document.querySelectorAll('.card[data-game-type]').forEach(card => {
+        allGames.push({
+          element: card,
+          type: card.getAttribute('data-game-type'),
+          genre: card.getAttribute('data-genre'),
+          price: parseFloat(card.getAttribute('data-price')),
+          rating: parseFloat(card.getAttribute('data-rating')),
+          name: card.getAttribute('data-name'),
+          date: card.getAttribute('data-date')
+        });
+      });
+    }
+
+    // Filtrar juegos
+    function filterGames() {
+      let filtered = [...allGames];
+
+      // Filtro de búsqueda
+      if (currentFilters.search) {
+        const searchTerm = currentFilters.search.toLowerCase();
+        filtered = filtered.filter(game => {
+          const name = game.name.toLowerCase();
+          const genre = game.genre.toLowerCase();
+          const text = game.element.textContent.toLowerCase();
+          return name.includes(searchTerm) || genre.includes(searchTerm) || text.includes(searchTerm);
+        });
+      }
+
+      // Filtro de género
+      if (currentFilters.genre) {
+        filtered = filtered.filter(game => game.genre === currentFilters.genre);
+      }
+
+      // Filtro de precio
+      if (currentFilters.price) {
+        if (currentFilters.price === 'free') {
+          filtered = filtered.filter(game => game.price === 0);
+        } else if (currentFilters.price === '0-10') {
+          filtered = filtered.filter(game => game.price > 0 && game.price <= 10);
+        } else if (currentFilters.price === '10-20') {
+          filtered = filtered.filter(game => game.price > 10 && game.price <= 20);
+        } else if (currentFilters.price === '20+') {
+          filtered = filtered.filter(game => game.price > 20);
+        }
+      }
+
+      // Filtro de calificación
+      if (currentFilters.rating) {
+        const minRating = parseFloat(currentFilters.rating);
+        filtered = filtered.filter(game => game.rating >= minRating);
+      }
+
+      // Ordenar
+      switch (currentFilters.sort) {
+        case 'price-low':
+          filtered.sort((a, b) => a.price - b.price);
+          break;
+        case 'price-high':
+          filtered.sort((a, b) => b.price - a.price);
+          break;
+        case 'rating':
+          filtered.sort((a, b) => b.rating - a.rating);
+          break;
+        case 'name':
+          filtered.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'recent':
+        default:
+          filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+          break;
+      }
+
+      return filtered;
+    }
+
+    // Mostrar resultados
+    function displayResults() {
+      const filtered = filterGames();
+
+      // Ocultar todos los juegos
+      allGames.forEach(game => {
+        game.element.style.display = 'none';
+      });
+
+      // Mostrar juegos filtrados
+      let freeCount = 0;
+      let paidCount = 0;
+
+      filtered.forEach(game => {
+        game.element.style.display = 'block';
+        if (game.type === 'free') {
+          freeCount++;
+        } else {
+          paidCount++;
+        }
+      });
+
+      // Mostrar/ocultar secciones
+      if (freeCount === 0) {
+        freeGamesSection.style.display = 'none';
+      } else {
+        freeGamesSection.style.display = 'block';
+      }
+
+      if (paidCount === 0) {
+        premiumGamesSection.style.display = 'none';
+      } else {
+        premiumGamesSection.style.display = 'block';
+      }
+
+      // Actualizar contador
+      resultsCount.textContent = `Mostrando ${filtered.length} juego${filtered.length !== 1 ? 's' : ''}`;
+
+      // Mostrar mensaje de "sin resultados"
+      if (filtered.length === 0) {
+        noResults.style.display = 'block';
+        freeGamesSection.style.display = 'none';
+        premiumGamesSection.style.display = 'none';
+      } else {
+        noResults.style.display = 'none';
+      }
+
+      // Actualizar filtros activos
+      updateActiveFilters();
+    }
+
+    // Actualizar filtros activos
+    function updateActiveFilters() {
+      activeFiltersContainer.innerHTML = '';
+      
+      if (currentFilters.search) {
+        addFilterTag('Búsqueda', currentFilters.search, 'search');
+      }
+      if (currentFilters.genre) {
+        const genreName = genreFilter.options[genreFilter.selectedIndex].text;
+        addFilterTag('Género', genreName, 'genre');
+      }
+      if (currentFilters.price) {
+        const priceName = priceFilter.options[priceFilter.selectedIndex].text;
+        addFilterTag('Precio', priceName, 'price');
+      }
+      if (currentFilters.rating) {
+        const ratingName = ratingFilter.options[ratingFilter.selectedIndex].text;
+        addFilterTag('Calificación', ratingName, 'rating');
+      }
+    }
+
+    // Agregar etiqueta de filtro
+    function addFilterTag(label, value, filterType) {
+      const tag = document.createElement('div');
+      tag.className = 'filter-tag';
+      tag.innerHTML = `
+        <span>${label}: ${value}</span>
+        <span class="filter-tag-remove" data-filter="${filterType}">×</span>
+      `;
+      activeFiltersContainer.appendChild(tag);
+
+      tag.querySelector('.filter-tag-remove').addEventListener('click', () => {
+        removeFilter(filterType);
+      });
+    }
+
+    // Remover filtro individual
+    function removeFilter(filterType) {
+      currentFilters[filterType] = '';
+      
+      switch(filterType) {
+        case 'search':
+          searchInput.value = '';
+          break;
+        case 'genre':
+          genreFilter.value = '';
+          break;
+        case 'price':
+          priceFilter.value = '';
+          break;
+        case 'rating':
+          ratingFilter.value = '';
+          break;
+      }
+      
+      displayResults();
+    }
+
+    // Event listeners
+    searchBtn.addEventListener('click', () => {
+      currentFilters.search = searchInput.value.trim();
+      displayResults();
+    });
+
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        currentFilters.search = searchInput.value.trim();
+        displayResults();
+      }
+    });
+
+    searchInput.addEventListener('input', () => {
+      // Búsqueda en tiempo real (opcional)
+      if (searchInput.value.length > 2 || searchInput.value.length === 0) {
+        currentFilters.search = searchInput.value.trim();
+        displayResults();
+      }
+    });
+
+    genreFilter.addEventListener('change', () => {
+      currentFilters.genre = genreFilter.value;
+      displayResults();
+    });
+
+    priceFilter.addEventListener('change', () => {
+      currentFilters.price = priceFilter.value;
+      displayResults();
+    });
+
+    ratingFilter.addEventListener('change', () => {
+      currentFilters.rating = ratingFilter.value;
+      displayResults();
+    });
+
+    sortFilter.addEventListener('change', () => {
+      currentFilters.sort = sortFilter.value;
+      displayResults();
+    });
+
+    clearFiltersBtn.addEventListener('click', () => {
+      currentFilters = {
+        search: '',
+        genre: '',
+        price: '',
+        rating: '',
+        sort: 'recent'
+      };
+      searchInput.value = '';
+      genreFilter.value = '';
+      priceFilter.value = '';
+      ratingFilter.value = '';
+      sortFilter.value = 'recent';
+      displayResults();
+    });
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+      collectGames();
+      displayResults();
+    });
+  </script>
+</body>
+</html>
